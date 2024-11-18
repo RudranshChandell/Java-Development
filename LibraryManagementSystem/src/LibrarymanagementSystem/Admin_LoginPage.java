@@ -5,11 +5,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Admin_LoginPage extends JFrame {
     private static final String pathtoadmindetails = "C:\\Java Project\\LibraryManagementSystem\\src\\LibrarymanagementSystem\\Admin Details.csv";
+    private static final String pathToLoginRecords = "C:\\Java Project\\LibraryManagementSystem\\src\\LibrarymanagementSystem\\LoginRecords.csv"; // Path for login records
     private JTextField emailField;
     private JPasswordField passwordField;
 
@@ -49,16 +54,16 @@ public class Admin_LoginPage extends JFrame {
         gbc.gridwidth = 2;
         panel.add(loginButton, gbc);
 
-        // Removed the signup button and its action listener
-
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
                 if (checkCredentials(email, password)) {
+                    logLoginAttempt(email, "Success");
                     showMenu();
                 } else {
+                    logLoginAttempt(email, "Failure");
                     JOptionPane.showMessageDialog(null, "Invalid credentials. Please try again.");
                 }
             }
@@ -84,30 +89,37 @@ public class Admin_LoginPage extends JFrame {
         return false;
     }
 
+    private void logLoginAttempt(String email, String status) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(pathToLoginRecords, true))) {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            bw.write(email + "," + timestamp + "," + status);
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void showMenu() {
         JFrame menuFrame = new JFrame("Admin Menu");
-        menuFrame.setSize(400, 400); // Adjust size as needed
+        menuFrame.setSize(400, 400);
         menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuFrame.setLocationRelativeTo(null);
 
-        // Create a main panel with GridBagLayout to center the content
         JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
 
-        // Add the main panel to the frame
         menuFrame.add(mainPanel);
 
-        // Create a panel for the menu buttons
         JPanel menuPanel = new JPanel();
-        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS)); // Set BoxLayout for vertical arrangement
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add some padding
 
         JLabel menuLabel = new JLabel("Menu");
         menuLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        menuLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the label
+        menuLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         menuPanel.add(menuLabel);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space after the label
 
@@ -117,7 +129,7 @@ public class Admin_LoginPage extends JFrame {
         JButton loginRecordsButton = new JButton("Login Records");
         JButton transactionHistoryButton = new JButton("Transaction History");
         JButton studentQueriesButton = new JButton("Student Queries");
-        JButton logoutButton = new JButton("Log Out"); // Add Log Out button
+        JButton logoutButton = new JButton("Log Out");
 
         manageBooksButton.setFont(new Font("Arial", Font.PLAIN, 16));
         manageStudentsButton.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -125,18 +137,16 @@ public class Admin_LoginPage extends JFrame {
         loginRecordsButton.setFont(new Font("Arial", Font.PLAIN, 16));
         transactionHistoryButton.setFont(new Font("Arial", Font.PLAIN, 16));
         studentQueriesButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        logoutButton.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font for Log Out button
+        logoutButton.setFont(new Font("Arial", Font.PLAIN, 16));
 
-        // Center the buttons
         manageBooksButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         manageStudentsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         manageAdminButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginRecordsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         transactionHistoryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         studentQueriesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT); // Center Log Out button
+        logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Add action listeners for buttons
         manageBooksButton.addActionListener(e -> {
             ManageBooks manageBooks = new ManageBooks();
             manageBooks.setVisible(true);
@@ -153,7 +163,8 @@ public class Admin_LoginPage extends JFrame {
         });
 
         loginRecordsButton.addActionListener(e -> {
-            // Add functionality to view login records
+            LoginRecordsPage loginRecordsPage = new LoginRecordsPage();
+            loginRecordsPage.setVisible(true);
         });
 
         transactionHistoryButton.addActionListener(e -> {
@@ -164,35 +175,33 @@ public class Admin_LoginPage extends JFrame {
             // Add functionality to handle student queries
         });
 
-        // Add action listener for Log Out button
         logoutButton.addActionListener(e -> {
-            menuFrame.dispose(); // Close the menu frame
-            Main main = new Main(); // Create a new login page
-            main.setVisible(true); // Show the login page
+            menuFrame.dispose();
+            Main main = new Main();
+            main.setVisible(true);
         });
 
-        // Add buttons to the panel
         menuPanel.add(manageBooksButton);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between buttons
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         menuPanel.add(manageStudentsButton);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between buttons
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         menuPanel.add(manageAdminButton);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between buttons
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         menuPanel.add(loginRecordsButton);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between buttons
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         menuPanel.add(transactionHistoryButton);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between buttons
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         menuPanel.add(studentQueriesButton);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space before Log Out button
-        menuPanel.add(logoutButton); // Add Log Out button to the panel
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        menuPanel.add(logoutButton);
 
-        // Center the menuPanel in the mainPanel
         gbc.gridx = 0;
         gbc.gridy = 0;
         mainPanel.add(menuPanel, gbc);
 
-        menuFrame.setVisible(true); // Show the menu frame
+        menuFrame.setVisible(true);
     }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             Admin_LoginPage loginPage = new Admin_LoginPage();
