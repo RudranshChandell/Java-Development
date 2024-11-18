@@ -13,9 +13,8 @@ public class Main extends JFrame {
     private JTextArea textArea;
     private final String introText = "Welcome to the Library Management System!\n"
             + "This system allows you to manage books, members, and transactions.\n"
-            + "This Code is made by Rudransh Chandel and Raushan Raj ....\n"
-            + "Please wait while we direct you to the login form..."
-            ;
+            + "Please wait while we direct you to the login form...\n"
+            + "This Code is made by Rudransh Chandel and Raushan Raj ....";
     private int currentIndex = 0;
     private Timer timer;
     private JLabel clockLabel;
@@ -115,8 +114,10 @@ public class Main extends JFrame {
         studentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(loginFrame, "Student Login Selected.");
                 // Here you can add functionality for student login
+                StudentLoginPage loginpage=new StudentLoginPage();
+                loginpage.setVisible(true);
+                loginFrame.dispose();
             }
         });
 

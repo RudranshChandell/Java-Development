@@ -79,12 +79,28 @@ public class StudentLoginPage extends JFrame {
     }
 
     private boolean authenticate(String username, String password) {
+        if (username.trim().isEmpty() || password.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Username or Password cannot be empty.");
+            return false;
+        }
+
         try (BufferedReader br = new BufferedReader(new FileReader(PATH_TO_STUDENT_DETAILS))) {
             String line;
             while ((line = br.readLine()) != null) {
+                // Split the line by commas
                 String[] credentials = line.split(",");
-                if (credentials.length >= 2) {
-                    if (credentials[0].trim().equals(username.trim()) && credentials[1].trim().equals(password.trim())) {
+
+                // Check if the CSV has enough columns (at least 3: username, password, etc.)
+                if (credentials.length >= 3) {
+                    // Extract username and password from the CSV (username is first, password is third)
+                    String csvUsername = credentials[0].trim();
+                    String csvPassword = credentials[2].trim();
+
+                    // Debugging: Print out the values you're comparing
+                    System.out.println("Checking username: " + csvUsername + " and password: " + csvPassword);
+
+                    // Check if the entered username and password match the ones in the CSV
+                    if (csvUsername.equalsIgnoreCase(username.trim()) && csvPassword.equals(password.trim())) {
                         return true;
                     }
                 }
@@ -92,7 +108,8 @@ public class StudentLoginPage extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
+
+        return false; // Return false if no match is found
     }
 
     private void showStudentMenu() {
@@ -101,17 +118,14 @@ public class StudentLoginPage extends JFrame {
         menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuFrame.setLocationRelativeTo(null);
 
-        // Create a main panel with GridBagLayout to center the content
         JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
 
-        // Add the main panel to the frame
         menuFrame.add(mainPanel);
 
-        // Create a panel for the menu buttons
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -125,29 +139,48 @@ public class StudentLoginPage extends JFrame {
         JButton viewBooksButton = new JButton("View Books");
         JButton borrowBooksButton = new JButton("Borrow Books");
         JButton returnBooksButton = new JButton("Return Books");
+        JButton changePasswordButton = new JButton("Change Password");
+        JButton askQueryButton = new JButton("Ask Query");
         JButton logoutButton = new JButton("Log Out");
 
         viewBooksButton.setFont(new Font("Arial", Font.PLAIN, 16));
         borrowBooksButton.setFont(new Font("Arial", Font.PLAIN, 16));
         returnBooksButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        changePasswordButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        askQueryButton.setFont(new Font("Arial", Font.PLAIN, 16));
         logoutButton.setFont(new Font("Arial", Font.PLAIN, 16));
 
         viewBooksButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         borrowBooksButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         returnBooksButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        changePasswordButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        askQueryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Add action listeners for buttons
         viewBooksButton.addActionListener(e -> {
-            // Add functionality to view books
+            ViewBooksPage page = new ViewBooksPage();
+            page.setVisible(true);
         });
 
         borrowBooksButton.addActionListener(e -> {
-            // Add functionality to borrow books
+            BorrowBookPage page = new BorrowBookPage();
+            page.setVisible(true);
         });
 
         returnBooksButton.addActionListener(e -> {
-            // Add functionality to return books
+            ReturnBookPage page = new ReturnBookPage();
+            page.setVisible(true);
+        });
+
+        changePasswordButton.addActionListener(e -> {
+            ChangePasswordPage changePasswordPage = new ChangePasswordPage();
+            changePasswordPage.setVisible(true);
+        });
+
+        askQueryButton.addActionListener(e -> {
+            AskQueryPage askQueryPage = new AskQueryPage();
+            askQueryPage.setVisible(true);
         });
 
         logoutButton.addActionListener(e -> {
@@ -161,6 +194,10 @@ public class StudentLoginPage extends JFrame {
         menuPanel.add(borrowBooksButton);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         menuPanel.add(returnBooksButton);
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        menuPanel.add(changePasswordButton);
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        menuPanel.add(askQueryButton);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         menuPanel.add(logoutButton);
 

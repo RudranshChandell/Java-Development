@@ -79,8 +79,8 @@ public class ManageAdmin extends JFrame {
         viewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Add logic to view all admins
-                JOptionPane.showMessageDialog(null, "Displaying all admins...");
+                ShowAdminPage page =new ShowAdminPage();
+                page .setVisible(true);
             }
         });
 

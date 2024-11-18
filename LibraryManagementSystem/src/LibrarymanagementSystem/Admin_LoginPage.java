@@ -172,7 +172,8 @@ public class Admin_LoginPage extends JFrame {
         });
 
         studentQueriesButton.addActionListener(e -> {
-            // Add functionality to handle student queries
+            ShowQueryPage page=new ShowQueryPage();
+            page.setVisible(true);
         });
 
         logoutButton.addActionListener(e -> {
